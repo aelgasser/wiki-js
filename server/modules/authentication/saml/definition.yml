@@ -174,3 +174,13 @@ props:
     default: 'memberOf'
     hint: The field storing the user groups attribute. Can be a variable name or a URI-formatted string.
     order: 45
+  groupSyncStrategy:
+    type: String
+    title: Group Synchronization Strategy
+    hint: Tells the Wiki what to do with local group when mapping with the IdP's groups. GROUP-SYNC-IDP-ONLY= The IdP is the source of truth, only keep its group assignments. GROUP-SYNC-KEEP-DEFAULTS= Same as IDP-ONLY but keep Wiki-js's default groups (Administrators and Guest) if assigned. GROUP-SYNC-KEEP-ALL=Add groups assignment comming from the IdP but keep the local assignments.
+    default: 'GROUP-SYNC-KEEP-DEFAULTS'
+    enum:
+      - GROUP-SYNC-IDP-ONLY
+      - GROUP-SYNC-KEEP-DEFAULTS
+      - GROUP-SYNC-KEEP-ALL
+    order: 46

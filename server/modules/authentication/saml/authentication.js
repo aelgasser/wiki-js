@@ -57,7 +57,8 @@ module.exports = {
             }
           })
 
-          // map users LDAP groups to wiki groups with the same name, and remove any groups that don't match LDAP
+          // map users LDAP groups to wiki groups with the same name,
+          // and remove any groups that don't match LDAP depending on the sync strategy
           // Code stolen from the LDAP implementation with a slight variation on the field we extract the value from
           // In SAML v2 groups come in profile.attributes and can be 1 string or an array of strings
           if (conf.mapGroups) {
@@ -70,8 +71,13 @@ module.exports = {
               for (const groupId of _.difference(expectedGroups, currentGroups)) {
                 await user.$relatedQuery('groups').relate(groupId)
               }
-              for (const groupId of _.difference(currentGroups, expectedGroups)) {
-                await user.$relatedQuery('groups').unrelate().where('groupId', groupId)
+
+              if(['GROUP-SYNC-IDP-ONLY', 'GROUP-SYNC-KEEP-DEFAULTS'].includes(conf.groupSyncStrategy)) {
+                for (const groupId of _.difference(currentGroups, expectedGroups)) {
+                  if(conf.groupSyncStrategy === 'GROUP-SYNC-IDP-ONLY' || ![1, 2].includes(groupId)) {
+                    await user.$relatedQuery('groups').unrelate().where('groupId', groupId)
+                  }
+                }
               }
             }
           }
